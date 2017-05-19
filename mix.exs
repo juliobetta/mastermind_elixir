@@ -5,6 +5,7 @@ defmodule MasterMind.Mixfile do
     [app: :master_mind,
      version: "0.0.1",
      elixir: "~> 1.4",
+     uuid: "~> 1.1",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix] ++ Mix.compilers,
      start_permanent: Mix.env == :prod,
