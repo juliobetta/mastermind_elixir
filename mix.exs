@@ -5,7 +5,6 @@ defmodule MasterMind.Mixfile do
     [app: :master_mind,
      version: "0.0.1",
      elixir: "~> 1.4",
-     uuid: "~> 1.1",
      elixirc_paths: elixirc_paths(Mix.env),
      compilers: [:phoenix] ++ Mix.compilers,
      start_permanent: Mix.env == :prod,
@@ -31,6 +30,7 @@ defmodule MasterMind.Mixfile do
     [{:phoenix, "~> 1.3.0-rc"},
      {:phoenix_pubsub, "~> 1.0"},
      {:phoenix_html, "~> 2.6"},
+     {:uuid, "~> 1.1"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:cowboy, "~> 1.0"}]
   end
