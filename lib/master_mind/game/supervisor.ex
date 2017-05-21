@@ -6,15 +6,15 @@ defmodule MasterMind.Game.Supervisor do
   require Logger
 
   use Supervisor
-  alias MasterMind.Game
+  alias MasterMind.Game.Server, as: GameServer
 
 
-  def start_link, do: Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
+  def start_link, do: Supervisor.start_link(__MODULE__, [], name: __MODULE__)
 
 
-  def init(:ok) do
+  def init(_) do
     children = [
-      worker(Game, [], restart: :temporary)
+      worker(GameServer, [], restart: :transient)
     ]
 
     supervise(children, strategy: :simple_one_for_one)
@@ -53,7 +53,15 @@ defmodule MasterMind.Game.Supervisor do
   defp game_data({_id, pid, _type, _modules}) do
     pid
     |> GenServer.call(:get_data)
-    |> Map.take([:id, :answer, :max_attempts, :total_attempts, :over])
+    |> Map.take([
+      :id,
+      :secret,
+      :started_at,
+      :elapsed_time,
+      :answers,
+      :difficulty,
+      :over
+    ])
   end
 
 end
