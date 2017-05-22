@@ -5,6 +5,8 @@ defmodule MasterMind.Game.Server do
   use GenServer
   require Logger
 
+  alias MasterMind.Game.Struct, as: Game
+
 
   ##############################################################################
   # API ########################################################################
@@ -21,13 +23,15 @@ defmodule MasterMind.Game.Server do
   # GenServer API ##############################################################
   ##############################################################################
 
-  def start_link(params) do
-    GenServer.start_link(__MODULE__, params, name: ref(params.id))
+  def start_link(id) do
+    GenServer.start_link(__MODULE__, id, name: ref(id))
   end
 
 
-  def init(state) do
-    {:ok, state}
+  def init(id) do
+    # @todo get game from Cache
+    game = Game.new(id: id)
+    {:ok, game}
   end
 
 

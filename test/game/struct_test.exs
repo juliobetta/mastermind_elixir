@@ -4,6 +4,20 @@ defmodule MasterMind.Game.StructTest do
   alias MasterMind.Game.Struct, as: Game
 
 
+  test "creating a game passing id as param" do
+    id = "1"
+    game = Game.new id: id
+
+    assert game.id == id
+  end
+
+  test "generates id if game is created without passing an id" do
+    game = Game.new
+
+    refute is_nil(game.id)
+  end
+
+
   test "creating a game with difficulty :easy by default" do
     game = Game.new
     assert game.difficulty == :easy
