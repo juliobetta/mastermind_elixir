@@ -26,7 +26,7 @@ defmodule MasterMind.Game.Struct do
     difficulty = parse_difficulty(opts.difficulty)
 
     %__MODULE__{ opts |
-      id: UUID.uuid4,
+      id: if(is_nil(opts.id), do: UUID.uuid4, else: opts.id),
       difficulty: difficulty,
       secret: generate_secret(difficulty),
       started_at: DateTime.utc_now |> DateTime.to_unix
