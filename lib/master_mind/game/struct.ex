@@ -35,6 +35,41 @@ defmodule MasterMind.Game.Struct do
   end
 
 
+  @doc """
+  Get matches from a secret. The possibles values are:
+
+  - `1` for color and position
+  - `0` for color
+  - `-1` when color nor position are matched
+
+  ## Parameters
+  - `secret` - List, The game secret
+  - `answer` - List, The user guess
+
+  ## Examples
+
+      Game.get_matches
+  """
+  def get_matches(secret, answer) do
+    do_get_matches(secret, answer, secret, []) |> Enum.reverse
+  end
+
+  defp do_get_matches([], [], _, acc), do: acc
+
+  # `sh` - Secret head
+  # `st` - Secret tail
+  # `ah` - Answer head
+  # `at` - Answer tail
+  defp do_get_matches([sh|st], [ah|at], secret, acc) do
+    match = cond do
+      sh == ah -> 1
+      Enum.member?(secret, ah) -> 0
+      true -> -1
+    end
+
+    do_get_matches(st, at, secret, [match|acc])
+  end
+
 
   ##############################################################################
   # PRIVATE FUNCTIONS ##########################################################

@@ -6,7 +6,7 @@ defmodule MasterMind.Game.Server do
   require Logger
 
   alias MasterMind.Game.Struct, as: Game
-  alias MasterMind.Utils.DateTime, as: DateTimeUtils
+  import MasterMind.Utils.DateTime, only: [now: 0]
 
 
   ##############################################################################
@@ -47,7 +47,7 @@ defmodule MasterMind.Game.Server do
     |> add_answer(answer)
     |> check_secret(answer)
 
-    {:reply, {:ok, game}, game}
+    {:reply, game, game}
   end
 
 
@@ -56,7 +56,8 @@ defmodule MasterMind.Game.Server do
   ##############################################################################
 
   defp add_answer(game, answer) do
-    %{game | answers: [answer | game.answers]}
+    matches = Game.get_matches(game.secret, answer)
+    %{game | answers: [[answer, matches] | game.answers]}
   end
 
 
@@ -66,7 +67,7 @@ defmodule MasterMind.Game.Server do
         %{
           game |
           over: true,
-          elapsed_time: (DateTimeUtils.now() - game.started_at)
+          elapsed_time: now() - game.started_at
         }
       true ->
         game
