@@ -19,4 +19,14 @@ defmodule MasterMind.GameTest do
 
     assert game.id == id
   end
+
+  @tag :pending
+  test ".check_answer checks if answer matches the secret" do
+    id = "1"
+    GameServer.start_link(id)
+    game = GameServer.get_data(id)
+    GameServer.check_answer(id, game.secret)
+
+    IO.inspect(GameServer.get_data(id))
+  end
 end

@@ -20,4 +20,7 @@ defmodule MasterMind.Application do
     opts = [strategy: :one_for_one, name: MasterMind.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+
+  def generate_game_id, do: UUID.uuid4
 end

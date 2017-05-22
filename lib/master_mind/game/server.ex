@@ -6,6 +6,7 @@ defmodule MasterMind.Game.Server do
   require Logger
 
   alias MasterMind.Game.Struct, as: Game
+  alias MasterMind.Utils.DateTime, as: DateTimeUtils
 
 
   ##############################################################################
@@ -17,6 +18,8 @@ defmodule MasterMind.Game.Server do
   """
   def get_data(id), do: try_call(id, :get_data)
 
+
+  def check_answer(id, answer), do: try_call(id, {:check_answer, answer})
 
 
   ##############################################################################
@@ -37,11 +40,40 @@ defmodule MasterMind.Game.Server do
 
   def handle_call(:get_data, _from, game), do: {:reply, game, game}
 
+  def handle_call({:check_answer, answer}, _from, game) do
+    Logger.debug "Handling :check_answer Game #{game.id}"
+
+    game = game
+    |> add_answer(answer)
+    |> check_secret(answer)
+
+    {:reply, {:ok, game}, game}
+  end
 
 
   ##############################################################################
   # PRIVATE FUNCTIONS ##########################################################
   ##############################################################################
+
+  defp add_answer(game, answer) do
+    %{game | answers: [answer | game.answers]}
+  end
+
+
+  defp check_secret(game, answer) do
+    cond do
+      game.secret == answer ->
+        %{
+          game |
+          over: true,
+          elapsed_time: (DateTimeUtils.now() - game.started_at)
+        }
+      true ->
+        game
+    end
+
+  end
+
 
   # Generates global reference
   defp ref(id), do: {:global, {:game, id}}

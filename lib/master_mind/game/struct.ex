@@ -4,6 +4,7 @@ defmodule MasterMind.Game.Struct do
   """
   import String, only: [to_atom: 1]
   alias MasterMind.Utils.Color
+  alias MasterMind.Utils.DateTime, as: DateTimeUtils
 
 
   defstruct [
@@ -29,7 +30,7 @@ defmodule MasterMind.Game.Struct do
       id: if(is_nil(opts.id), do: UUID.uuid4, else: opts.id),
       difficulty: difficulty,
       secret: generate_secret(difficulty),
-      started_at: DateTime.utc_now |> DateTime.to_unix
+      started_at: DateTimeUtils.now
     }
   end
 

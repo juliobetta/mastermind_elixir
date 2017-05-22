@@ -2,6 +2,7 @@ defmodule MasterMind.Game.SupervisorTest do
   use ExUnit.Case, async: true
 
   alias MasterMind.Game.Supervisor, as: GameSupervisor
+  import MasterMind.Application, only: [generate_game_id: 0]
 
 
   setup do
@@ -14,8 +15,8 @@ defmodule MasterMind.Game.SupervisorTest do
 
 
   test ".create_game adds a new supervised game" do
-    GameSupervisor.create_game("1")
-    GameSupervisor.create_game("2")
+    GameSupervisor.create_game(generate_game_id())
+    GameSupervisor.create_game(generate_game_id())
 
     counts = Supervisor.count_children(GameSupervisor)
 
@@ -24,8 +25,9 @@ defmodule MasterMind.Game.SupervisorTest do
 
 
   test "creating games with same ids will not increment children" do
-    GameSupervisor.create_game("1")
-    GameSupervisor.create_game("1")
+    id = generate_game_id()
+    GameSupervisor.create_game(id)
+    GameSupervisor.create_game(id)
 
     counts = Supervisor.count_children(GameSupervisor)
 
@@ -34,7 +36,7 @@ defmodule MasterMind.Game.SupervisorTest do
 
 
   test ".stop_game stops a game process" do
-    id = "1"
+    id = generate_game_id()
 
     GameSupervisor.create_game(id)
     GameSupervisor.stop_game(id)
@@ -46,11 +48,12 @@ defmodule MasterMind.Game.SupervisorTest do
 
 
   test ".current_games returns a list of running games" do
-    GameSupervisor.create_game("1")
-    GameSupervisor.create_game("2")
+    [id1, id2] = [generate_game_id(), generate_game_id()]
+    GameSupervisor.create_game(id1)
+    GameSupervisor.create_game(id2)
 
-    ids = GameSupervisor.current_games |> Enum.map(&(&1.id)) |> Enum.sort
+    results = GameSupervisor.current_games |> Enum.map(&(&1.id))
 
-    assert ~w(1 2) == ids
+    assert Enum.member?(results, id1) and Enum.member?(results, id2)
   end
 end
