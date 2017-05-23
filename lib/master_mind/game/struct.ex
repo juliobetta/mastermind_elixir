@@ -48,28 +48,46 @@ defmodule MasterMind.Game.Struct do
 
   ## Examples
 
-      Game.get_matches
+      iex> Game.get_matches([1,2,3,4], [1,2])
+      {:error, "Total elements of answer is not equals to secret"}
+      iex> Game.get_matches([1,1,1,1], [1,1,1,1])
+      {:ok, [1,1,1,1]}
+      iex> Game.get_matches([1,1,1,1], [2,3,4,5])
+      {:ok, [-1,-1,-1,-1]}
+      iex> Game.get_matches([1,2,3,4], [4,3,2,1])
+      {:ok, [0,0,0,0]}
+      iex> Game.get_matches([1,2,3,4], [1,1,1,1])
+      {:ok, [1,-1,-1,-1]}
+      iex> Game.get_matches([1,2,2,1], [1,1,1,1])
+      {:ok, [1,-1,-1,1]}
+      iex> Game.get_matches([1,4,5,2], [1,2,5,4])
+      {:ok, [1,0,1,0]}
   """
   def get_matches(secret, answer) do
-    do_get_matches(secret, answer, secret, []) |> Enum.reverse
+    cond do
+      Enum.count(secret) != Enum.count(answer) ->
+        {:error, "Total elements of answer is not equals to secret"}
+      true ->
+        do_get_matches(secret, answer, secret, [])
+    end
+
   end
 
-  defp do_get_matches([], [], _, acc), do: acc
+  def get_matches(secret, answer) when secret == answer, do: {:ok, [1,1,1,1]}
 
-  # `sh` - Secret head
-  # `st` - Secret tail
-  # `ah` - Answer head
-  # `at` - Answer tail
-  defp do_get_matches([sh|st], [ah|at], secret, acc) do
+  defp do_get_matches([], [], _, acc), do: {:ok, acc |> Enum.reverse}
+
+  defp do_get_matches([s_head|s_tail], [a_head|a_tail], secret, acc) do
     match = cond do
-      sh == ah -> 1
-      Enum.member?(secret, ah) -> 0
+      s_head == a_head -> 1
+      (a_tail -- [a_head] == a_tail) and (secret -- [a_head] != secret) -> 0
       true -> -1
     end
 
-    do_get_matches(st, at, secret, [match|acc])
-  end
+    secret = unless(match == -1, do: secret -- [a_head], else: secret)
 
+    do_get_matches(s_tail, a_tail, secret, [match|acc])
+  end
 
   ##############################################################################
   # PRIVATE FUNCTIONS ##########################################################

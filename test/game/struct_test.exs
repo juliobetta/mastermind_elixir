@@ -3,6 +3,8 @@ defmodule MasterMind.Game.StructTest do
 
   alias MasterMind.Game.Struct, as: Game
 
+  doctest Game
+
 
   test "creating a game passing id as param" do
     id = "1"
