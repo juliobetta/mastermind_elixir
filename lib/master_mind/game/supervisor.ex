@@ -9,22 +9,17 @@ defmodule MasterMind.Game.Supervisor do
   alias MasterMind.Game.Server, as: GameServer
 
 
-  def start_link, do: Supervisor.start_link(__MODULE__, [], name: __MODULE__)
 
-
-  def init(_) do
-    children = [
-      worker(GameServer, [], restart: :transient)
-    ]
-
-    supervise(children, strategy: :simple_one_for_one)
-  end
-
+  ##############################################################################
+  # PUBLIC API #################################################################
+  ##############################################################################
 
   @doc """
   Creates a new supervised game process
   """
-  def create_game(id), do: Supervisor.start_child(__MODULE__, [id])
+  def create_game(id, difficulty \\ :easy) do
+    Supervisor.start_child(__MODULE__, [[id: id, difficulty: difficulty]])
+  end
 
 
   @doc """
@@ -51,7 +46,24 @@ defmodule MasterMind.Game.Supervisor do
 
   # Gets game's state
   defp game_data({_id, pid, _type, _modules}) do
-    GenServer.call(pid, :get_data)
+    {:ok, game} = GenServer.call(pid, :get_data)
+    game
   end
 
+
+
+  ##############################################################################
+  # SUPERVISOR API #############################################################
+  ##############################################################################
+
+  def start_link, do: Supervisor.start_link(__MODULE__, [], name: __MODULE__)
+
+
+  def init(_) do
+    children = [
+      worker(GameServer, [], restart: :transient)
+    ]
+
+    supervise(children, strategy: :simple_one_for_one)
+  end
 end

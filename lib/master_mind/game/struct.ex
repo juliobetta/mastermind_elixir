@@ -51,34 +51,34 @@ defmodule MasterMind.Game.Struct do
 
   ## Examples
 
-      iex> Game.get_matches([1,2,3,4], [1,2])
+      iex> Game.match_answer([1,2,3,4], [1,2])
       {:error, "Total pegs in answer is not equals to secret"}
-      iex> Game.get_matches([1,1,1,1], [1,1,1,1])
+      iex> Game.match_answer([1,1,1,1], [1,1,1,1])
       {:ok, [1,1,1,1]}
-      iex> Game.get_matches([1,2,3,4,5,6], [1,2,3,4,5,6])
+      iex> Game.match_answer([1,2,3,4,5,6], [1,2,3,4,5,6])
       {:ok, [1,1,1,1,1,1]}
-      iex> Game.get_matches([1,1,1,1], [2,3,4,5])
+      iex> Game.match_answer([1,1,1,1], [2,3,4,5])
       {:ok, [-1,-1,-1,-1]}
-      iex> Game.get_matches([1,2,3,4], [4,3,2,1])
+      iex> Game.match_answer([1,2,3,4], [4,3,2,1])
       {:ok, [0,0,0,0]}
-      iex> Game.get_matches([1,2,3,4], [1,1,1,1])
+      iex> Game.match_answer([1,2,3,4], [1,1,1,1])
       {:ok, [1,-1,-1,-1]}
-      iex> Game.get_matches([1,2,2,1], [1,1,1,1])
+      iex> Game.match_answer([1,2,2,1], [1,1,1,1])
       {:ok, [1,-1,-1,1]}
-      iex> Game.get_matches([1,4,5,2], [1,2,5,4])
+      iex> Game.match_answer([1,4,5,2], [1,2,5,4])
       {:ok, [1,0,1,0]}
   """
-  def get_matches(secret, answer) when secret == answer do
+  def match_answer(secret, answer) when secret == answer do
     # fill list with 1
     {:ok, Stream.cycle([1]) |> Enum.take(length(secret))}
   end
 
-  def get_matches(secret, answer) when length(secret) != length(answer) do
+  def match_answer(secret, answer) when length(secret) != length(answer) do
     {:error, "Total pegs in answer is not equals to secret"}
   end
 
-  def get_matches(secret, answer) do
-    do_get_matches(secret, answer, secret, [])
+  def match_answer(secret, answer) do
+    do_match_answer(secret, answer, secret, [])
   end
 
 
@@ -86,7 +86,7 @@ defmodule MasterMind.Game.Struct do
   # PRIVATE FUNCTIONS ##########################################################
   ##############################################################################
 
-  defp do_get_matches([], [], _, acc), do: {:ok, acc |> Enum.reverse}
+  defp do_match_answer([], [], _, acc), do: {:ok, acc |> Enum.reverse}
 
   # Why using --?, one may ask...
   # In the docs, it says:
@@ -99,7 +99,7 @@ defmodule MasterMind.Game.Struct do
   # In this case, since the size of both secret and answer is small,
   # limited by the game difficulty, there's no need to
   # convert them to MapSet.
-  defp do_get_matches([s_head|s_tail], [a_head|a_tail], secret, acc) do
+  defp do_match_answer([s_head|s_tail], [a_head|a_tail], secret, acc) do
     match = cond do
       s_head == a_head -> 1
       (a_tail -- [a_head] == a_tail) and (secret -- [a_head] != secret) -> 0
@@ -108,7 +108,7 @@ defmodule MasterMind.Game.Struct do
 
     secret = unless(match == -1, do: secret -- [a_head], else: secret)
 
-    do_get_matches(s_tail, a_tail, secret, [match|acc])
+    do_match_answer(s_tail, a_tail, secret, [match|acc])
   end
 
 

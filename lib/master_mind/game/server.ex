@@ -12,7 +12,7 @@ defmodule MasterMind.Game.Server do
 
 
   ##############################################################################
-  # API ########################################################################
+  # PUBLIC API #################################################################
   ##############################################################################
 
   @doc """
@@ -28,29 +28,35 @@ defmodule MasterMind.Game.Server do
   # GenServer API ##############################################################
   ##############################################################################
 
-  def start_link(id) do
-    GenServer.start_link(__MODULE__, id, name: ref(id))
+  def start_link(id) when is_binary(id) do
+    GenServer.start_link(__MODULE__, [id: id, difficulty: :easy], name: ref(id))
+  end
+
+  def start_link(state) do
+    GenServer.start_link(__MODULE__, state, name: ref(state[:id]))
   end
 
 
-  def init(id) do
+  def init([id: _, difficulty: _] = state) do
     # @todo get game from Cache
-    game = Game.new(id: id)
+    game = Game.new(state)
     {:ok, game}
   end
 
 
-  def handle_call(:get_data, _from, game), do: {:reply, game, game}
+  def handle_call(:get_data, _from, game), do: {:reply, {:ok, game}, game}
 
   def handle_call({:check_answer, answer}, _from, game) do
     Logger.debug "Handling :check_answer Game #{game.id}"
 
-    response = case game |> add_answer(answer) do
-      {:ok, game} -> {:ok, game |> check_secret(answer)}
-      error -> error
+    case Game.match_answer(game.secret, answer) do
+      {:ok, match} ->
+        match = shuffle(match)
+        game = game |> add_answer(answer, match) |> check_secret(answer)
+        {:reply, {:ok, match}, game}
+      error ->
+        {:reply, error, game}
     end
-
-    {:reply, response, game}
   end
 
 
@@ -58,12 +64,9 @@ defmodule MasterMind.Game.Server do
   # PRIVATE FUNCTIONS ##########################################################
   ##############################################################################
 
-  defp add_answer(game, answer) do
-    case Game.get_matches(game.secret, answer) do
-      {:ok, matches} ->
-        {:ok, %{game | answers: [[answer, shuffle(matches)] | game.answers]}}
-      error -> error
-    end
+
+  defp add_answer(game, answer, match) do
+    %{game | answers: [[answer, match] | game.answers]}
   end
 
 

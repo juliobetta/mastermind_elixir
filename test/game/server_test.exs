@@ -10,7 +10,7 @@ defmodule MasterMind.GameTest do
     id = generate_game_id()
 
     GameServer.start_link(id)
-    game = GameServer.get_data(id)
+    {:ok, game} = GameServer.get_data(id)
 
     {:ok, game: game, id: id}
   end
@@ -24,7 +24,7 @@ defmodule MasterMind.GameTest do
 
 
   test ".get_data getting game data", context do
-    game = GameServer.get_data(context[:id])
+    {:ok, game} = GameServer.get_data(context[:id])
 
     assert game == %Game{
       id: context[:id],
@@ -40,14 +40,16 @@ defmodule MasterMind.GameTest do
 
   test ".check_answer setting over true when secret is equals to answer", context do
     answer = context[:game].secret
-    {:ok, game} = GameServer.check_answer(context[:id], answer)
+    GameServer.check_answer(context[:id], answer)
+    {:ok, game} = GameServer.get_data(context[:id])
 
     assert game.over == true
   end
 
   test ".check_answer adding answer and matches to game state", context do
     answer = [0,0,0,0]
-    {:ok, game} = GameServer.check_answer(context[:id], answer)
+    GameServer.check_answer(context[:id], answer)
+    {:ok, game} = GameServer.get_data(context[:id])
 
     game_first_answer = List.first(game.answers)
 
@@ -61,5 +63,14 @@ defmodule MasterMind.GameTest do
     {:error, message} = GameServer.check_answer(context[:id], answer)
 
     assert is_binary(message)
+  end
+
+  test ".check_answer setting over=true when answer is equals to secret", context do
+    answer = context[:game].secret
+
+    {:ok, _} = GameServer.check_answer(context[:id], answer)
+    {:ok, game} = GameServer.get_data(context[:id])
+
+    assert game.over == true
   end
 end

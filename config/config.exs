@@ -23,25 +23,25 @@ config :master_mind,
   params: [
     easy: [
       pegs: 4,
-      duplicate: true,
+      duplicate: false,
       moves: nil,
-      time: nil
+      minutes: nil
     ],
     normal: [
       pegs: 4,
-      duplicate: false,
+      duplicate: true,
       moves: 12,
       minutes: nil
     ],
     hard: [
       pegs: 6,
-      duplicate: false,
+      duplicate: true,
       moves: 10,
       minutes: nil
     ],
     expert: [
       pegs: 6,
-      duplicate: false,
+      duplicate: true,
       moves: 10,
       minutes: 10
     ]
