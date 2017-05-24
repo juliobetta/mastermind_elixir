@@ -13,8 +13,8 @@ defmodule MasterMind.Utils.Color do
 
   ## Examples
 
-      colors = Color.take(4)
-      [1,3,5,1]
+      iex> length(MasterMind.Utils.Color.take(4)) == 4
+      true
   """
   def take(total, opts \\ [])
   def take(total, []), do: do_take(total, [])

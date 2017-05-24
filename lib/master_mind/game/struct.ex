@@ -3,12 +3,12 @@ defmodule MasterMind.Game.Struct do
   Defines the game structure
   """
   import String, only: [to_atom: 1]
+
   alias MasterMind.Utils.Color
   alias MasterMind.Utils.DateTime, as: DateTimeUtils
 
-  @easy_total_pegs 4
-  @normal_total_pegs 4
-  @hard_total_pegs 6
+  @config Application.get_env(:master_mind, :params)
+
 
   defstruct [
     id: nil,
@@ -55,6 +55,8 @@ defmodule MasterMind.Game.Struct do
       {:error, "Total pegs in answer is not equals to secret"}
       iex> Game.get_matches([1,1,1,1], [1,1,1,1])
       {:ok, [1,1,1,1]}
+      iex> Game.get_matches([1,2,3,4,5,6], [1,2,3,4,5,6])
+      {:ok, [1,1,1,1,1,1]}
       iex> Game.get_matches([1,1,1,1], [2,3,4,5])
       {:ok, [-1,-1,-1,-1]}
       iex> Game.get_matches([1,2,3,4], [4,3,2,1])
@@ -66,7 +68,10 @@ defmodule MasterMind.Game.Struct do
       iex> Game.get_matches([1,4,5,2], [1,2,5,4])
       {:ok, [1,0,1,0]}
   """
-  def get_matches(secret, answer) when secret == answer, do: {:ok, [1,1,1,1]}
+  def get_matches(secret, answer) when secret == answer do
+    # fill list with 1
+    {:ok, Stream.cycle([1]) |> Enum.take(length(secret))}
+  end
 
   def get_matches(secret, answer) when length(secret) != length(answer) do
     {:error, "Total pegs in answer is not equals to secret"}
@@ -107,11 +112,11 @@ defmodule MasterMind.Game.Struct do
   end
 
 
-  defp generate_secret(:easy) do
-    Color.take @easy_total_pegs, allow_duplicate: false
+  defp generate_secret(difficulty) do
+    Color.take(@config[difficulty][:pegs],
+      allow_duplicate: @config[difficulty][:duplicate]
+    )
   end
-  defp generate_secret(:normal), do: Color.take @normal_total_pegs
-  defp generate_secret(:hard), do: Color.take @hard_total_pegs
 
 
   defp parse_difficulty(value) do

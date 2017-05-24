@@ -18,6 +18,35 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# Game opts
+config :master_mind,
+  params: [
+    easy: [
+      pegs: 4,
+      duplicate: true,
+      moves: nil,
+      time: nil
+    ],
+    normal: [
+      pegs: 4,
+      duplicate: false,
+      moves: 12,
+      minutes: nil
+    ],
+    hard: [
+      pegs: 6,
+      duplicate: false,
+      moves: 10,
+      minutes: nil
+    ],
+    expert: [
+      pegs: 6,
+      duplicate: false,
+      moves: 10,
+      minutes: 10
+    ]
+  ]
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
