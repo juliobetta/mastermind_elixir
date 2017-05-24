@@ -38,6 +38,15 @@ defmodule MasterMind.GameTest do
   end
 
 
+  test ".check_answer returning error when game is already over", context do
+    answer = context[:game].secret
+
+    {:ok, _ } = GameServer.check_answer(context[:id], answer)
+    {:error, message} = GameServer.check_answer(context[:id], answer)
+
+    assert message == "The game is over"
+  end
+
   test ".check_answer setting over true when secret is equals to answer", context do
     answer = context[:game].secret
     GameServer.check_answer(context[:id], answer)

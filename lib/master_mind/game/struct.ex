@@ -7,7 +7,7 @@ defmodule MasterMind.Game.Struct do
   alias MasterMind.Utils.Color
   alias MasterMind.Utils.DateTime, as: DateTimeUtils
 
-  @config Application.get_env(:master_mind, :params)
+  @difficulties Application.get_env(:master_mind, :difficulties)
 
 
   defstruct [
@@ -113,16 +113,17 @@ defmodule MasterMind.Game.Struct do
 
 
   defp generate_secret(difficulty) do
-    Color.take(@config[difficulty][:pegs],
-      allow_duplicate: @config[difficulty][:duplicate]
+    Color.take(@difficulties[difficulty][:pegs],
+      allow_duplicate: @difficulties[difficulty][:duplicate]
     )
   end
 
 
   defp parse_difficulty(value) do
     key = if(is_binary(value), do: to_atom(value), else: value)
+    difficulties = Map.new(@difficulties) |> Map.keys
 
-    case Enum.member?([:hard, :normal, :easy], key) do
+    case Enum.member?(difficulties, key) do
       true -> key
       _ -> :easy
     end

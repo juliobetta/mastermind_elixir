@@ -32,19 +32,23 @@ defmodule MasterMind.Game.Server do
     GenServer.start_link(__MODULE__, [id: id, difficulty: :easy], name: ref(id))
   end
 
-  def start_link(state) do
-    GenServer.start_link(__MODULE__, state, name: ref(state[:id]))
+  def start_link([id: _, difficulty: _] = params) do
+    GenServer.start_link(__MODULE__, params, name: ref(params[:id]))
   end
 
 
-  def init([id: _, difficulty: _] = state) do
+  def init([id: _, difficulty: _] = params) do
     # @todo get game from Cache
-    game = Game.new(state)
+    game = Game.new(params)
     {:ok, game}
   end
 
 
   def handle_call(:get_data, _from, game), do: {:reply, {:ok, game}, game}
+
+  def handle_call({:check_answer, _}, _from, %{over: true} = game) do
+    {:reply, {:error, "The game is over"}, game}
+  end
 
   def handle_call({:check_answer, answer}, _from, game) do
     Logger.debug "Handling :check_answer Game #{game.id}"

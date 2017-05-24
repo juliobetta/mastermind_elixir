@@ -20,30 +20,30 @@ config :logger, :console,
 
 # Game opts
 config :master_mind,
-  params: [
+  difficulties: [
     easy: [
       pegs: 4,
       duplicate: false,
-      moves: nil,
+      max_moves: 100,
       minutes: nil
     ],
     normal: [
       pegs: 4,
       duplicate: true,
-      moves: 12,
+      max_moves: 12,
       minutes: nil
     ],
     hard: [
       pegs: 6,
       duplicate: true,
-      moves: 10,
-      minutes: nil
+      max_moves: 12,
+      minutes: 10
     ],
-    expert: [
+    extreme: [
       pegs: 6,
       duplicate: true,
-      moves: 10,
-      minutes: 10
+      max_moves: 10,
+      minutes: 5
     ]
   ]
 
