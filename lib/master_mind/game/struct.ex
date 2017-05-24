@@ -6,6 +6,9 @@ defmodule MasterMind.Game.Struct do
   alias MasterMind.Utils.Color
   alias MasterMind.Utils.DateTime, as: DateTimeUtils
 
+  @easy_total_pegs 4
+  @normal_total_pegs 4
+  @hard_total_pegs 6
 
   defstruct [
     id: nil,
@@ -63,20 +66,34 @@ defmodule MasterMind.Game.Struct do
       iex> Game.get_matches([1,4,5,2], [1,2,5,4])
       {:ok, [1,0,1,0]}
   """
-  def get_matches(secret, answer) do
-    cond do
-      Enum.count(secret) != Enum.count(answer) ->
-        {:error, "Total elements of answer is not equals to secret"}
-      true ->
-        do_get_matches(secret, answer, secret, [])
-    end
+  def get_matches(secret, answer) when secret == answer, do: {:ok, [1,1,1,1]}
 
+  def get_matches(secret, answer) when length(secret) != length(answer) do
+    {:error, "Total pegs in answer is not equals to secret"}
   end
 
-  def get_matches(secret, answer) when secret == answer, do: {:ok, [1,1,1,1]}
+  def get_matches(secret, answer) do
+    do_get_matches(secret, answer, secret, [])
+  end
+
+
+  ##############################################################################
+  # PRIVATE FUNCTIONS ##########################################################
+  ##############################################################################
 
   defp do_get_matches([], [], _, acc), do: {:ok, acc |> Enum.reverse}
 
+  # Why using --?, one may ask...
+  # In the docs, it says:
+  #
+  #    "The complexity of a -- b is proportional to length(a) * length(b),
+  #     meaning that it will be very slow if both a and b are long lists.
+  #     In such cases, consider converting each list to a MapSet and using
+  #     MapSet.difference/2."
+  #
+  # In this case, since the size of both secret and answer is small,
+  # limited by the game difficulty, there's no need to
+  # convert them to MapSet.
   defp do_get_matches([s_head|s_tail], [a_head|a_tail], secret, acc) do
     match = cond do
       s_head == a_head -> 1
@@ -89,14 +106,13 @@ defmodule MasterMind.Game.Struct do
     do_get_matches(s_tail, a_tail, secret, [match|acc])
   end
 
-  ##############################################################################
-  # PRIVATE FUNCTIONS ##########################################################
-  ##############################################################################
 
-  defp generate_secret(:easy),   do: Color.take 4, allow_duplicate: false
-  defp generate_secret(:normal), do: Color.take 4
-  defp generate_secret(:hard),   do: Color.take 6
-  defp generate_secret(_),       do: generate_secret(:easy)
+  defp generate_secret(:easy) do
+    Color.take @easy_total_pegs, allow_duplicate: false
+  end
+  defp generate_secret(:normal), do: Color.take @normal_total_pegs
+  defp generate_secret(:hard), do: Color.take @hard_total_pegs
+  defp generate_secret(_), do: generate_secret(:easy)
 
 
   defp parse_difficulty(value) do

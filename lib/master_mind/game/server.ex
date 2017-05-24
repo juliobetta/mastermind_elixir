@@ -3,10 +3,12 @@ defmodule MasterMind.Game.Server do
   Game Server
   """
   use GenServer
-  require Logger
 
   alias MasterMind.Game.Struct, as: Game
+
+  require Logger
   import MasterMind.Utils.DateTime, only: [now: 0]
+  import Enum, only: [shuffle: 1]
 
 
   ##############################################################################
@@ -43,11 +45,12 @@ defmodule MasterMind.Game.Server do
   def handle_call({:check_answer, answer}, _from, game) do
     Logger.debug "Handling :check_answer Game #{game.id}"
 
-    game = game
-    |> add_answer(answer)
-    |> check_secret(answer)
+    response = case game |> add_answer(answer) do
+      {:ok, game} -> {:ok, game |> check_secret(answer)}
+      error -> error
+    end
 
-    {:reply, game, game}
+    {:reply, response, game}
   end
 
 
@@ -56,8 +59,11 @@ defmodule MasterMind.Game.Server do
   ##############################################################################
 
   defp add_answer(game, answer) do
-    matches = Game.get_matches(game.secret, answer)
-    %{game | answers: [[answer, matches] | game.answers]}
+    case Game.get_matches(game.secret, answer) do
+      {:ok, matches} ->
+        {:ok, %{game | answers: [[answer, shuffle(matches)] | game.answers]}}
+      error -> error
+    end
   end
 
 
@@ -72,7 +78,6 @@ defmodule MasterMind.Game.Server do
       true ->
         game
     end
-
   end
 
 

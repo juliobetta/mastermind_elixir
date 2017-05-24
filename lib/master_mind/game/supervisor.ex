@@ -51,17 +51,7 @@ defmodule MasterMind.Game.Supervisor do
 
   # Gets game's state
   defp game_data({_id, pid, _type, _modules}) do
-    pid
-    |> GenServer.call(:get_data)
-    |> Map.take([
-      :id,
-      :secret,
-      :started_at,
-      :elapsed_time,
-      :answers,
-      :difficulty,
-      :over
-    ])
+    GenServer.call(pid, :get_data)
   end
 
 end

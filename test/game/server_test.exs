@@ -2,6 +2,7 @@ defmodule MasterMind.GameTest do
   use ExUnit.Case, async: true
 
   alias MasterMind.Game.Server, as: GameServer
+  alias MasterMind.Game.Struct, as: Game
   import MasterMind.Application, only: [generate_game_id: 0]
 
 
@@ -22,17 +23,43 @@ defmodule MasterMind.GameTest do
   end
 
 
-  test ".get_data gets game data", context do
+  test ".get_data getting game data", context do
     game = GameServer.get_data(context[:id])
 
-    assert game.id == context[:id]
+    assert game == %Game{
+      id: context[:id],
+      secret: context[:game].secret,
+      started_at: context[:game].started_at,
+      elapsed_time: 0,
+      over: false,
+      answers: [],
+      difficulty: :easy
+    }
   end
 
 
-  test ".check_answer set over true when secret is equals to answer", context do
+  test ".check_answer setting over true when secret is equals to answer", context do
     answer = context[:game].secret
-    game = GameServer.check_answer(context[:id], answer)
+    {:ok, game} = GameServer.check_answer(context[:id], answer)
 
     assert game.over == true
+  end
+
+  test ".check_answer adding answer and matches to game state", context do
+    answer = [0,0,0,0]
+    {:ok, game} = GameServer.check_answer(context[:id], answer)
+
+    game_first_answer = List.first(game.answers)
+
+    assert Enum.count(game.answers) > 0
+    assert List.first(game_first_answer) == answer
+    assert List.last(game_first_answer) == [-1,-1,-1,-1]
+  end
+
+  test ".check_answer returning error when answer count is different than secret", context do
+    answer = [1,2]
+    {:error, message} = GameServer.check_answer(context[:id], answer)
+
+    assert is_binary(message)
   end
 end

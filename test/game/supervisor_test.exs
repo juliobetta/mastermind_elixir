@@ -15,8 +15,7 @@ defmodule MasterMind.Game.SupervisorTest do
 
 
   test ".create_game adds a new supervised game" do
-    GameSupervisor.create_game(generate_game_id())
-    GameSupervisor.create_game(generate_game_id())
+    for _ <- 1..2, do: GameSupervisor.create_game(generate_game_id())
 
     counts = Supervisor.count_children(GameSupervisor)
 
@@ -26,8 +25,7 @@ defmodule MasterMind.Game.SupervisorTest do
 
   test "creating games with same ids will not increment children" do
     id = generate_game_id()
-    GameSupervisor.create_game(id)
-    GameSupervisor.create_game(id)
+    for _ <- 1..2, do: GameSupervisor.create_game(id)
 
     counts = Supervisor.count_children(GameSupervisor)
 
