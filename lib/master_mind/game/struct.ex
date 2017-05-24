@@ -52,7 +52,7 @@ defmodule MasterMind.Game.Struct do
   ## Examples
 
       iex> Game.get_matches([1,2,3,4], [1,2])
-      {:error, "Total elements of answer is not equals to secret"}
+      {:error, "Total pegs in answer is not equals to secret"}
       iex> Game.get_matches([1,1,1,1], [1,1,1,1])
       {:ok, [1,1,1,1]}
       iex> Game.get_matches([1,1,1,1], [2,3,4,5])
@@ -112,7 +112,6 @@ defmodule MasterMind.Game.Struct do
   end
   defp generate_secret(:normal), do: Color.take @normal_total_pegs
   defp generate_secret(:hard), do: Color.take @hard_total_pegs
-  defp generate_secret(_), do: generate_secret(:easy)
 
 
   defp parse_difficulty(value) do

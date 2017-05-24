@@ -5,7 +5,7 @@ defmodule MasterMind.Utils.ColorTest do
 
 
   test "takes the correact amount of elements" do
-    items = Color.take(4)
+    items = Color.take(4, allow_duplicate: true)
 
     assert length(items) == 4
   end

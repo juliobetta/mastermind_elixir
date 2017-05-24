@@ -26,9 +26,9 @@ defmodule MasterMind.Game.StructTest do
   end
 
   test "creating a game passing difficulty as param" do
-    game = Game.new difficulty: :hard
+    game = Game.new difficulty: :normal
 
-    assert game.difficulty == :hard
+    assert game.difficulty == :normal
   end
 
   test "invalid atomic difficulty defaults do :easy" do
@@ -44,9 +44,9 @@ defmodule MasterMind.Game.StructTest do
   end
 
   test "converts valid difficulty from string to atom" do
-    game = Game.new difficulty: "hard"
+    game = Game.new difficulty: "easy"
 
-    assert game.difficulty == :hard
+    assert game.difficulty == :easy
   end
 
 
