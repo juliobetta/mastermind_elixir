@@ -21,6 +21,7 @@ defmodule MasterMind.Web do
       use Phoenix.Controller, namespace: MasterMind.Web
       import Plug.Conn
       import MasterMind.Web.Router.Helpers
+    end
   end
 
   def view do
