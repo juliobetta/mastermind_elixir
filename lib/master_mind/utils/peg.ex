@@ -1,6 +1,6 @@
 defmodule MasterMind.Utils.Peg do
   @moduledoc """
-  Pin Pegs
+  Game Pegs
   """
 
   @doc """
