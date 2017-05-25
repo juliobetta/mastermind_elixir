@@ -4,7 +4,7 @@ defmodule MasterMind.Game.Struct do
   """
   import String, only: [to_atom: 1]
 
-  alias MasterMind.Utils.Color
+  alias MasterMind.Utils.Peg
   alias MasterMind.Utils.DateTime, as: DateTimeUtils
 
   @difficulties Application.get_env(:master_mind, :difficulties)
@@ -41,9 +41,9 @@ defmodule MasterMind.Game.Struct do
   @doc """
   Get matches from a secret. The possibles values are:
 
-  - `1` for color and position
-  - `0` for color
-  - `-1` when color nor position are matched
+  - `1` for peg and position
+  - `0` for peg
+  - `-1` when peg nor position are matched
 
   ## Parameters
   - `secret` - List, The game secret
@@ -113,7 +113,7 @@ defmodule MasterMind.Game.Struct do
 
 
   defp generate_secret(difficulty) do
-    Color.take(@difficulties[difficulty][:pegs],
+    Peg.take(@difficulties[difficulty][:pegs],
       allow_duplicate: @difficulties[difficulty][:duplicate]
     )
   end

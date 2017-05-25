@@ -50,13 +50,13 @@ defmodule MasterMind.Game.StructTest do
   end
 
 
-  test "games with difficulty :easy has :secret with 4 colors" do
+  test "games with difficulty :easy has :secret with 4 pegs" do
     game = Game.new
 
     assert length(game.secret) == 4
   end
 
-  test "games with difficulty :hard has :secret with 6 colors" do
+  test "games with difficulty :hard has :secret with 6 pegs" do
     game = Game.new difficulty: :hard
 
     assert length(game.secret) == 6

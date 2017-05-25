@@ -1,19 +1,19 @@
-defmodule MasterMind.Utils.Color do
+defmodule MasterMind.Utils.Peg do
   @moduledoc """
-  Pin Colors
+  Pin Pegs
   """
 
   @doc """
-  Take random colors from a range of values
+  Take random pegs from a range of values
 
   ## Parameters
-  - `total` - The amount of colors
+  - `total` - The amount of pegs
   - `opts`  - Optional params. `allow_duplicate: false` indicates that
   duplicates numbers are not allowed
 
   ## Examples
 
-      iex> length(MasterMind.Utils.Color.take(4)) == 4
+      iex> length(MasterMind.Utils.Peg.take(4)) == 4
       true
   """
   def take(total, opts \\ [])
