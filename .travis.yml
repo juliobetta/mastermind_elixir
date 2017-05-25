@@ -5,10 +5,18 @@ otp_release:
   - 19.0
 script:
 <<<<<<< HEAD
+<<<<<<< HEAD
   - "MIX_ENV=test mix do deps.get, compile, coveralls.travis"
 =======
+=======
+>>>>>>> change travis script
 <<<<<<< HEAD
   - "MIX_ENV=test mix do deps.get, compile, test"
+=======
+  - "MIX_ENV=test mix do deps.get, compile, coveralls.travis"
+>>>>>>> change travis script
+<<<<<<< HEAD
+=======
 =======
   - "MIX_ENV=test mix do deps.get, compile, coveralls.travis"
 >>>>>>> change travis script
