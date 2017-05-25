@@ -1,4 +1,4 @@
-Mastermind [![Build Status](https://travis-ci.org/juliobetta/mastermind_elixir.svg?branch=feature%2Fplay)](https://travis-ci.org/juliobetta/mastermind_elixir) [![Coverage Status](https://coveralls.io/repos/github/juliobetta/mastermind_elixir/badge.svg?branch=feature%2Fplay)](https://coveralls.io/github/juliobetta/mastermind_elixir?branch=feature%2Fplay)
+# Mastermind [![Build Status](https://travis-ci.org/juliobetta/mastermind_elixir.svg?branch=feature%2Fplay)](https://travis-ci.org/juliobetta/mastermind_elixir) [![Coverage Status](https://coveralls.io/repos/github/juliobetta/mastermind_elixir/badge.svg?branch=feature%2Fplay)](https://coveralls.io/github/juliobetta/mastermind_elixir?branch=feature%2Fplay)
 
 *WIP*
 
