@@ -4,4 +4,12 @@ elixir:
 otp_release:
   - 19.0
 script:
+<<<<<<< HEAD
   - "MIX_ENV=test mix do deps.get, compile, coveralls.travis"
+=======
+<<<<<<< HEAD
+  - "MIX_ENV=test mix do deps.get, compile, test"
+=======
+  - "MIX_ENV=test mix do deps.get, compile, coveralls.travis"
+>>>>>>> change travis script
+>>>>>>> change travis script
