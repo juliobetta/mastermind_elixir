@@ -5,6 +5,7 @@ defmodule MasterMind.Game.Server do
   use GenServer
 
   alias MasterMind.Game.Struct, as: Game
+  alias MasterMind.Game.Event, as: GameEvent
 
   require Logger
   import MasterMind.Utils.DateTime, only: [now: 0]
@@ -15,13 +16,13 @@ defmodule MasterMind.Game.Server do
   # PUBLIC API #################################################################
   ##############################################################################
 
-  @doc """
-  Returns the game state
-  """
   def get_data(id), do: try_call(id, :get_data)
 
+  def join(id, player_id, pid), do: try_call(id, {:join, player_id, pid})
 
-  def check_answer(id, answer), do: try_call(id, {:check_answer, answer})
+  def play(id, answer), do: try_call(id, {:check_answer, answer})
+
+  def player_left(id, player_id), do: try_call(id, {:player_left, player_id})
 
 
   ##############################################################################
@@ -38,6 +39,8 @@ defmodule MasterMind.Game.Server do
 
 
   def init([id: _, difficulty: _] = params) do
+    GameEvent.game_created
+
     # @todo get game from Cache
     game = Game.new(params)
     {:ok, game}
@@ -57,16 +60,72 @@ defmodule MasterMind.Game.Server do
       {:ok, match} ->
         match = shuffle(match)
         game = game |> add_answer(answer, match) |> check_secret(answer)
-        {:reply, {:ok, match}, game}
+        GameEvent.play
+        {:reply, {:ok, game}, game}
       error ->
         {:reply, error, game}
     end
+  end
+
+  def handle_call({:join, player_id, pid}, _from, game) do
+    Logger.debug "Handling :join for #{player_id} in Game #{game.id}"
+
+    cond do
+      game.player != nil ->
+        {:reply, {:error, "No more players allowed"}, game}
+      game.player == player_id ->
+        {:reply, {:ok, self()}, game}
+      true ->
+        Process.flag(:trap_exit, true)
+        Process.monitor(pid)
+
+        game = add_player(game, player_id)
+
+        GameEvent.player_added
+
+        {:reply, {:ok, self()}, game}
+    end
+  end
+
+  def handle_call({:player_left, player_id}, _from, game) do
+    Logger.debug "Handling :player_left for #{player_id} in Game #{game.id}"
+
+    game = %{game | over: true}
+
+    {:reply, {:ok, game}, game}
+  end
+
+
+  @doc """
+  Handles exit messages from linked game channels and boards processes
+  stopping the game process.
+  """
+  def handle_info({:DOWN, _ref, :process, _pid, _reason} = message, game) do
+    Logger.debug "Handling message in Game #{game.id}"
+    Logger.debug "#{inspect message}"
+
+    GameEvent.game_stopped(game.id)
+
+    {:stop, :normal, game}
+  end
+
+
+  def terminate(_reason, game) do
+    Logger.debug "Terminating Game process #{game.id}"
+
+    GameEvent.game_over
+
+    :ok
   end
 
 
   ##############################################################################
   # PRIVATE FUNCTIONS ##########################################################
   ##############################################################################
+
+  defp add_player(%{player: nil} = game, player_id) do
+    %{game | player: player_id}
+  end
 
 
   defp add_answer(game, answer, match) do

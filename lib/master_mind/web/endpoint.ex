@@ -1,7 +1,7 @@
 defmodule MasterMind.Web.Endpoint do
   use Phoenix.Endpoint, otp_app: :master_mind
 
-  socket "/socket", MasterMind.Web.UserSocket
+  socket "/socket", MasterMind.Web.PlayerSocket
 
   # Serve at "/" the static files from "priv/static" directory.
   #

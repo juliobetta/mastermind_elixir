@@ -10,9 +10,9 @@ defmodule MasterMind.Application do
     # Define workers and child supervisors to be supervised
     children = [
       supervisor(MasterMind.Web.Endpoint, []),
-      supervisor(MasterMind.Game.Supervisor, [])
+      supervisor(MasterMind.Game.Supervisor, []),
 
-      # worker(MasterMind.Game.Server, [])
+      worker(MasterMind.Game.Event, [])
     ]
 
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
@@ -23,4 +23,5 @@ defmodule MasterMind.Application do
 
 
   def generate_game_id, do: UUID.uuid4
+  def generate_player_id, do: UUID.uuid4
 end

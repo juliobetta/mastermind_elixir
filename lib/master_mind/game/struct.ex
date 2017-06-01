@@ -12,6 +12,7 @@ defmodule MasterMind.Game.Struct do
 
   defstruct [
     id: nil,
+    player: nil,
     secret: [],
     started_at: nil,
     elapsed_time: 0,

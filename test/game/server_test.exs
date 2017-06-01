@@ -28,6 +28,7 @@ defmodule MasterMind.GameTest do
 
     assert game == %Game{
       id: context[:id],
+      player: nil,
       secret: context[:game].secret,
       started_at: context[:game].started_at,
       elapsed_time: 0,
@@ -38,27 +39,25 @@ defmodule MasterMind.GameTest do
   end
 
 
-  test ".check_answer returning error when game is already over", context do
+  test ".play returning error when game is already over", context do
     answer = context[:game].secret
 
-    {:ok, _ } = GameServer.check_answer(context[:id], answer)
-    {:error, message} = GameServer.check_answer(context[:id], answer)
+    {:ok, _ } = GameServer.play(context[:id], answer)
+    {:error, message} = GameServer.play(context[:id], answer)
 
     assert message == "The game is over"
   end
 
-  test ".check_answer setting over true when secret is equals to answer", context do
+  test ".play setting over true when secret is equals to answer", context do
     answer = context[:game].secret
-    GameServer.check_answer(context[:id], answer)
-    {:ok, game} = GameServer.get_data(context[:id])
+    {:ok, game} = GameServer.play(context[:id], answer)
 
     assert game.over == true
   end
 
-  test ".check_answer adding answer and matches to game state", context do
+  test ".play adding answer and matches to game state", context do
     answer = [0,0,0,0]
-    GameServer.check_answer(context[:id], answer)
-    {:ok, game} = GameServer.get_data(context[:id])
+    {:ok, game} = GameServer.play(context[:id], answer)
 
     game_first_answer = List.first(game.answers)
 
@@ -67,18 +66,17 @@ defmodule MasterMind.GameTest do
     assert List.last(game_first_answer) == [-1,-1,-1,-1]
   end
 
-  test ".check_answer returning error when answer count is different than secret", context do
+  test ".play returning error when answer count is different than secret", context do
     answer = [1,2]
-    {:error, message} = GameServer.check_answer(context[:id], answer)
+    {:error, message} = GameServer.play(context[:id], answer)
 
     assert is_binary(message)
   end
 
-  test ".check_answer setting over=true when answer is equals to secret", context do
+  test ".play setting over=true when answer is equals to secret", context do
     answer = context[:game].secret
 
-    {:ok, _} = GameServer.check_answer(context[:id], answer)
-    {:ok, game} = GameServer.get_data(context[:id])
+    {:ok, game} = GameServer.play(context[:id], answer)
 
     assert game.over == true
   end
