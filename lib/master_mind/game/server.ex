@@ -71,10 +71,10 @@ defmodule MasterMind.Game.Server do
     Logger.debug "Handling :join for #{player_id} in Game #{game.id}"
 
     cond do
-      game.player != nil ->
-        {:reply, {:error, "No more players allowed"}, game}
       game.player == player_id ->
         {:reply, {:ok, self()}, game}
+      game.player != nil ->
+        {:reply, {:error, "No more players allowed"}, game}
       true ->
         Process.flag(:trap_exit, true)
         Process.monitor(pid)
@@ -100,9 +100,9 @@ defmodule MasterMind.Game.Server do
   Handles exit messages from linked game channels and boards processes
   stopping the game process.
   """
-  def handle_info({:DOWN, _ref, :process, _pid, _reason} = message, game) do
+  def handle_info({:DOWN, _ref, :process, _pid, _reason}, game) do
     Logger.debug "Handling message in Game #{game.id}"
-    Logger.debug "#{inspect message}"
+    # Logger.debug "#{inspect message}"
 
     GameEvent.game_stopped(game.id)
 

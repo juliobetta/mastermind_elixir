@@ -53,8 +53,8 @@ defmodule MasterMind.Web.GameChannel do
         {:noreply, socket}
       {:ok, game} ->
         {:reply, {:ok, game}, socket}
-      _ ->
-        {:error, {:error, %{reason: "Something went wrong while playing"}}, socket}
+      {:error, message} ->
+        {:reply, {:error, %{reason: message}}, socket}
     end
   end
 

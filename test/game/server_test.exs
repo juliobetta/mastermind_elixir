@@ -3,16 +3,21 @@ defmodule MasterMind.GameTest do
 
   alias MasterMind.Game.Server, as: GameServer
   alias MasterMind.Game.Struct, as: Game
-  import MasterMind.Application, only: [generate_game_id: 0]
+  import MasterMind.Application, only: [
+    generate_game_id: 0,
+    generate_player_id: 0
+  ]
+
+  @player_id generate_player_id()
 
 
   setup do
     id = generate_game_id()
 
-    GameServer.start_link(id)
+    {:ok, pid} = GameServer.start_link(id)
     {:ok, game} = GameServer.get_data(id)
 
-    {:ok, game: game, id: id}
+    {:ok, game: game, pid: pid, id: id}
   end
 
 
@@ -36,6 +41,25 @@ defmodule MasterMind.GameTest do
       answers: [],
       difficulty: :easy
     }
+  end
+
+
+  test ".join adds player to game", %{id: id, pid: pid} do
+    assert {:ok, _} = GameServer.join(id, @player_id, pid)
+    assert {:ok, %{player: @player_id}} = GameServer.get_data(id)
+  end
+
+  test ".join keeps stae when player is the same", %{id: id, pid: pid} do
+    GameServer.join(id, @player_id, pid)
+    assert {:ok, _} = GameServer.join(id, @player_id, pid)
+    assert {:ok, %{player: @player_id}} = GameServer.get_data(id)
+  end
+
+  test ".join receiving error when try to join again", %{id: id, pid: pid} do
+    GameServer.join(id, @player_id, pid)
+
+    assert {:error, "No more players allowed"} =
+      GameServer.join(id, generate_player_id(), pid)
   end
 
 
