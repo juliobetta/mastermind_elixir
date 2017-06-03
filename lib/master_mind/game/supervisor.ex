@@ -61,7 +61,7 @@ defmodule MasterMind.Game.Supervisor do
 
   def init(_) do
     children = [
-      worker(GameServer, [], restart: :transient)
+      worker(GameServer, [], restart: :temporary)
     ]
 
     supervise(children, strategy: :simple_one_for_one)

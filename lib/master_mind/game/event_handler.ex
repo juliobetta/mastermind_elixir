@@ -1,6 +1,7 @@
 defmodule MasterMind.Game.EventHandler do
   use GenEvent
-  alias MasterMind.Web.{MenuChannel,GameChannel}
+
+  alias MasterMind.Web.{LobbyChannel,GameChannel}
 
   def handle_event({:game_stopped, game_id}, state) do
     GameChannel.broadcast_stop(game_id)
@@ -14,7 +15,7 @@ defmodule MasterMind.Game.EventHandler do
   def handle_event(_, state), do: {:ok, state}
 
   defp broadcast_update(state) do
-    MenuChannel.broadcast_current_games
+    LobbyChannel.broadcast_current_games
 
     {:ok, state}
   end

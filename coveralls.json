@@ -1,0 +1,7 @@
+{
+  "custom_stop_words": [
+    "config_change",
+    "load_from_system_env",
+    "pipeline"
+  ]
+}

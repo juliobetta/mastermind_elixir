@@ -5,7 +5,7 @@ defmodule MasterMind.Web.PlayerSocket do
   use Phoenix.Socket
 
   ## Channels
-  channel "menu", MasterMind.Web.MenuChannel
+  channel "lobby", MasterMind.Web.LobbyChannel
   channel "game:*", MasterMind.Web.GameChannel
 
   ## Transports

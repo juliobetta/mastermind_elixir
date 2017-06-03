@@ -14,52 +14,56 @@ defmodule MasterMind.Web.GameChannelTest do
   setup do
     game_id = generate_game_id()
 
-    {:ok, game} = GameSupervisor.create_game(game_id)
     {:ok, socket} = connect(PlayerSocket, %{"id" => @player_id})
+    {:ok, game} = GameSupervisor.create_game(game_id)
     {:ok, _, game_socket} = subscribe_and_join(
       socket, GameChannel, "game:" <> game_id
     )
 
-    {:ok, game_id: game_id, game: game, socket: socket, game_socket: game_socket}
+    on_exit fn ->
+      close socket
+      leave game_socket
+    end
+
+    {:ok,
+      game_id: game_id,
+      game: game,
+      socket: socket,
+      game_socket: game_socket
+    }
   end
 
-  test "joining an invalid game channel", %{socket: socket} do
+  test "joins an invalid game channel", %{socket: socket} do
     assert {:error, %{reason: "Game does not exist"}} =
       subscribe_and_join(socket, GameChannel, "game:invalid")
   end
 
 
-  test("game:get_data fetching the game data",
-    %{game_socket: socket, game_socket: socket, game_id: game_id }
+  test("game:get_data fetches the game data",
+    %{game_socket: socket, game_id: game_id }
   ) do
-    {:ok, game} = GameServer.get_data(game_id)
-
     ref = push(socket, "game:get_data", %{})
-    leave(socket)
 
-    assert_reply(ref, :ok, %{game: {:ok, ^game}})
+    assert_reply(ref, :ok, %{game: {:ok, %{id: ^game_id }}})
   end
 
 
-  test("game:joined player joining the game",
-    %{game_socket: socket}
-  ) do
+  test "game:joined player joins the game", %{game_socket: socket} do
     push(socket, "game:joined", %{})
 
     assert_broadcast("game:player_added", %{player_id: @player_id})
   end
 
 
-  test("game:play receiving an :ok reply",
+  test("game:play receives an :ok reply",
     %{game_socket: socket, game_id: game_id}
   ) do
     ref = push(socket, "game:play", %{"answer" => [1,2,3,4]})
-    leave(socket)
 
     assert_reply(ref, :ok, %{id: ^game_id})
   end
 
-  test("game:play receiving :error",
+  test("game:play receives :error",
     %{game_socket: socket}
   ) do
     ref = push(socket, "game:play", %{"answer" => []})
@@ -75,10 +79,8 @@ defmodule MasterMind.Web.GameChannelTest do
     {:ok, game} = GameServer.get_data(game_id)
 
     push(socket, "game:play", %{"answer": game.secret})
-    leave(socket)
 
     assert_broadcast("game:over", _)
-    assert_broadcast("game:player_left", _)
   end
 
 

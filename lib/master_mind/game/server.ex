@@ -58,9 +58,12 @@ defmodule MasterMind.Game.Server do
 
     case Game.match_answer(game.secret, answer) do
       {:ok, match} ->
-        match = shuffle(match)
-        game = game |> add_answer(answer, match) |> check_secret(answer)
+        game = game
+        |> add_answer(answer, shuffle(match))
+        |> check_secret(answer)
+
         GameEvent.play
+
         {:reply, {:ok, game}, game}
       error ->
         {:reply, error, game}

@@ -1,4 +1,4 @@
-defmodule MasterMind.Web.MenuChannel do
+defmodule MasterMind.Web.LobbyChannel do
   @moduledoc """
   Lobby channel
   """
@@ -10,7 +10,7 @@ defmodule MasterMind.Web.MenuChannel do
   alias MasterMind.Application, as: GameApp
 
 
-  def join("menu", _msg, socket) do
+  def join("lobby", _msg, socket) do
     {:ok, socket}
   end
 
@@ -28,8 +28,8 @@ defmodule MasterMind.Web.MenuChannel do
 
 
   def broadcast_current_games do
-    Logger.debug "Broadcasting current games from LobbyChannel"
+    # Logger.debug "Broadcasting current games from LobbyChannel"
 
-    GameEndpoint.broadcast("menu", "update_games", %{games: GameSupervisor.current_games})
+    GameEndpoint.broadcast("lobby", "update_games", %{games: GameSupervisor.current_games})
   end
 end
